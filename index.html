@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <style>
+  #nfc-data p {
+    border-bottom: 1px solid #ddd; 
+    padding: 5px;
+  }
+  </style>
+
+</head>
+
+<body>
+
+  <button id="nfc-scan">NFCスキャン開始</button>
+
+  <div id="nfc-data"></div>
+
+  <script>
+
+  const button = document.getElementById("nfc-scan");
+  const dataDiv = document.getElementById("nfc-data");
+
+  button.addEventListener("click", async () => {
+
+    if ("NDEFReader" in window) {
+
+      const nfcReader = new NDEFReader();
+      nfcReader.onreading = event => {
+        
+        const decoder = new TextDecoder();
+        const data = decoder.decode(event.message.records[0].data);
+        
+        dataDiv.innerHTML += `<p>${data}</p>`;
+
+      }
+
+      try {
+        await nfcReader.scan();
+      } catch(error) {
+        console.log("NFCの許可が必要です");
+      }
+
+    } else {
+      console.log("このブラウザではNFCに未対応です"); 
+    }
+
+  });
+
+  </script>
+
+</body>
+</html>
